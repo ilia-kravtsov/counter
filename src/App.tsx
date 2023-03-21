@@ -15,20 +15,15 @@ function App() {
     let [display, setDisplay] = useState<number | string>('')
 
     useEffect(() => {
-
-        let newStartValue = localStorage.getItem('minValue')
-        if (newStartValue) {
-            let newMnValue = JSON.parse(newStartValue)
+        let newMinValue = localStorage.getItem('minValue')
+        let newMaxValue = localStorage.getItem('maxValue')
+        if (newMinValue && newMaxValue) {
+            let newMnValue = JSON.parse(newMinValue)
+            let newMxValue = JSON.parse(newMaxValue)
+            setMaxValue(newMxValue)
             setMinValue(newMnValue)
             setCounter(newMnValue)
         }
-
-        let newMaxValue = localStorage.getItem('maxValue')
-        if (newMaxValue) {
-            let newMxValue = JSON.parse(newMaxValue)
-            setMaxValue(newMxValue)
-        }
-
     }, [])
     useEffect(() => {
         let newMinValue = localStorage.getItem('minValue')
@@ -166,7 +161,6 @@ function App() {
     let maxValueColorClass = 'rgba(25,118,210,0.72)'
     let minBackColor = ''
     let maxBackColor = ''
-
 
     if (counter <= minValue) {
         disabledReset = true
