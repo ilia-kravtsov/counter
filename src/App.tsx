@@ -1,4 +1,4 @@
-import React, {ChangeEvent, useState} from 'react';
+import React, {ChangeEvent, useEffect, useState} from 'react';
 import s from './App.module.css';
 import {IconButton, TextField} from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
@@ -14,74 +14,225 @@ function App() {
     let [counter, setCounter] = useState<number>(0)
     let [display, setDisplay] = useState<number | string>('')
 
-    const onAddCounterClick = () => setCounter(counter+1)
+    useEffect(() => {
+
+        let newStartValue = localStorage.getItem('minValue')
+        if (newStartValue) {
+            let newMnValue = JSON.parse(newStartValue)
+            setMinValue(newMnValue)
+            setCounter(newMnValue)
+        }
+
+        let newMaxValue = localStorage.getItem('maxValue')
+        if (newMaxValue) {
+            let newMxValue = JSON.parse(newMaxValue)
+            setMaxValue(newMxValue)
+        }
+
+    }, [])
+    useEffect(() => {
+        let newMinValue = localStorage.getItem('minValue')
+        if (newMinValue) {
+            let newMnValue = JSON.parse(newMinValue)
+            if (newMnValue < 0) {
+                setDisplay('Incorrect value!')
+            }
+        }
+    }, [maxValue])
+    useEffect(() => {
+        let newMaxValue = localStorage.getItem('maxValue')
+        if (newMaxValue) {
+            let newMxValue = JSON.parse(newMaxValue)
+            if (newMxValue < 0) {
+                setDisplay('Incorrect value!')
+            }
+        }
+    }, [minValue])
+
+    const onAddCounterClick = () => {
+        setCounter(counter+1)
+    }
     const onResetCounterClick = () => setCounter(minValue)
     const onMaxValueChange = (e: ChangeEvent<HTMLInputElement>) => {
         let event = +e.currentTarget.value
         setMaxValue(event)
-        if (event < 0) {
-            setDisplay('Incorrect value!')
-        }
-        if (event >= 0) {
-            setDisplay('enter values and press "set"')
-        }
         localStorage.setItem('maxValue', JSON.stringify(event))
+        if (event < 0) setDisplay('Incorrect value!');
+        if (event >= 0) setDisplay('enter values and press "set"');
     }
     const onMinValueChange = (e: ChangeEvent<HTMLInputElement>) => {
         let event = +e.currentTarget.value
         setMinValue(event)
-        if (event < 0) {
-            setDisplay('Incorrect value!')
-        }
-        if (event > 0) {
-            setDisplay('enter values and press "set"')
-        }
-        if (event === 0) {
-            setDisplay('enter values and press "set"')
-        }
         localStorage.setItem('minValue', JSON.stringify(event))
+        if (event < 0) setDisplay('Incorrect value!');
+        if (event >= 0) setDisplay('enter values and press "set"');
     }
     const onSetClick = () => {
         let newMinValue = localStorage.getItem('minValue')
         if (newMinValue) {
             let newValue = JSON.parse(newMinValue)
             setCounter(newValue)
+            setDisplay('')
         }
     }
     const onUpArrowMaxClick = () => {
         setMaxValue(maxValue+1)
         localStorage.setItem('maxValue', JSON.stringify(maxValue+1))
+        let newMaxValue = localStorage.getItem('maxValue')
+        let newMinValue = localStorage.getItem('minValue')
+        if (newMaxValue && newMinValue) {
+            let newMxValue = JSON.parse(newMaxValue)
+            let newMnValue = JSON.parse(newMinValue)
+            if (newMxValue >= 0) {
+                setDisplay('enter values and press "set"')
+            }
+            if (newMxValue <= newMnValue) {
+                setDisplay('Incorrect value!')
+            }
+            if (newMxValue < 0) {
+                setDisplay('Incorrect value!')
+            }
+        }
     }
     const onDownArrowMaxClick = () => {
         setMaxValue(maxValue-1)
         localStorage.setItem('maxValue', JSON.stringify(maxValue-1))
+        let newMinValue = localStorage.getItem('minValue')
+        let newMaxValue = localStorage.getItem('maxValue')
+        if (newMaxValue && newMinValue) {
+            let newMxValue = JSON.parse(newMaxValue)
+            let newMnValue = JSON.parse(newMinValue)
+            if (newMxValue >= 0 && newMnValue >= 0) {
+                setDisplay('enter values and press "set"')
+            }
+            if (newMxValue <= newMnValue) {
+                setDisplay('Incorrect value!')
+            }
+            if (newMxValue < 0) {
+                setDisplay('Incorrect value!')
+            }
+        }
     }
     const onUpArrowMinClick = () => {
         setMinValue(minValue+1)
         localStorage.setItem('minValue', JSON.stringify(minValue+1))
+        let newMinValue = localStorage.getItem('minValue')
+        let newMaxValue = localStorage.getItem('maxValue')
+        if (newMinValue && newMaxValue) {
+            let newMnValue = JSON.parse(newMinValue)
+            let newMxValue = JSON.parse(newMaxValue)
+            if (newMnValue >= 0) {
+                setDisplay('enter values and press "set"')
+            }
+            if (newMxValue <= newMnValue) {
+                setDisplay('Incorrect value!')
+            }
+            if (newMnValue < 0) {
+                setDisplay('Incorrect value!')
+            }
+
+        }
     }
     const onDownArrowMinClick = () => {
         setMinValue(minValue-1)
         localStorage.setItem('minValue', JSON.stringify(minValue-1))
+        let newMinValue = localStorage.getItem('minValue')
+        let newMaxValue = localStorage.getItem('maxValue')
+        if (newMinValue && newMaxValue) {
+            let newMnValue = JSON.parse(newMinValue)
+            let newMxValue = JSON.parse(newMaxValue)
+            if (newMnValue >= 0) {
+                setDisplay('enter values and press "set"')
+            }
+            if (newMnValue === 0) {
+                setDisplay('enter values and press "set"')
+            }
+            if (newMxValue <= newMnValue) {
+                setDisplay('Incorrect value!')
+            }
+            if (newMnValue < 0) {
+                setDisplay('Incorrect value!')
+            }
+
+        }
+
     }
 
-    let final_display_counter: number | string = counter
     let disabledReset: boolean = false
     let disabledAdd: boolean = false
     let disabledSet: boolean = false
     let counterDisplay: string = s.counterDisplay
+    let minValueColorClass = 'rgba(25,118,210,0.72)'
+    let maxValueColorClass = 'rgba(25,118,210,0.72)'
+    let minBackColor = ''
+    let maxBackColor = ''
 
-    if (counter <= minValue) disabledReset = true
+
+    if (counter <= minValue) {
+        disabledReset = true
+    }
     if (counter >= maxValue) {
         disabledAdd = true
         counterDisplay = `${s.counterDisplay} ${s.colorRed}`
     }
-    if (minValue < 0 || minValue >= maxValue) {
+    if (display === 'enter values and press "set"') {
+        counterDisplay = `${s.counterDisplay} ${s.error}`
+        disabledAdd = true
+        disabledReset = true
+    }
+    if (display === 'Incorrect value!') {
         disabledReset = true
         disabledAdd = true
         disabledSet = true
-        final_display_counter = 'Incorrect value!'
-        counterDisplay = `${s.counterDisplay} ${s.colorRed} ${s.error}`
+        counterDisplay = `${s.counterDisplay} ${s.error} ${s.colorRed}`
+        minValueColorClass = 'white'
+        maxValueColorClass = 'white'
+        minBackColor = 'rgba(210,0,31,0.72)'
+    }
+    if (display === '') {
+        disabledSet = true
+    }
+    if (minValue >= maxValue) {
+        minValueColorClass = 'white'
+        maxValueColorClass = 'white'
+        minBackColor = 'rgba(210,0,31,0.72)'
+        maxBackColor = 'rgba(210,0,31,0.72)'
+        display = 'Incorrect value!'
+        counterDisplay = `${s.counterDisplay} ${s.error} ${s.colorRed}`
+        disabledReset = true
+        disabledAdd = true
+        disabledSet = true
+    }
+    if (maxValue < 0) {
+        disabledReset = true
+        disabledAdd = true
+        disabledSet = true
+        maxBackColor = 'rgba(210,0,31,0.72)'
+        minBackColor = 'rgba(210,0,31,0.72)'
+        display = 'Incorrect value!'
+        counterDisplay = `${s.counterDisplay} ${s.error} ${s.colorRed}`
+        maxValueColorClass = 'white'
+    }
+    if (minValue < 0) {
+        disabledReset = true
+        disabledAdd = true
+        disabledSet = true
+        maxValueColorClass = 'rgba(25,118,210,0.72)'
+        minBackColor = 'rgba(210,0,31,0.72)'
+        display = 'Incorrect value!'
+        counterDisplay = `${s.counterDisplay} ${s.error} ${s.colorRed}`
+        minValueColorClass = 'white'
+    }
+    if (minValue < 0 && maxValue < 0) {
+        disabledReset = true
+        disabledAdd = true
+        disabledSet = true
+        minBackColor = 'rgba(210,0,31,0.72)'
+        maxBackColor = 'rgba(210,0,31,0.72)'
+        display = 'Incorrect value!'
+        counterDisplay = `${s.counterDisplay} ${s.error} ${s.colorRed}`
+        minValueColorClass = 'white'
+        maxValueColorClass = 'white'
     }
 
     return (
@@ -93,7 +244,7 @@ function App() {
                         <TextField variant={'outlined'}
                                    sx={{height: '30px', width: '40%'}}
                                    size="small"
-                                   inputProps={{min: 0, style: { textAlign: 'center', color: 'rgba(25,118,210,0.72)', fontWeight: 'bold'}}}
+                                   inputProps={{min: 0, style: { textAlign: 'center', color: maxValueColorClass, fontWeight: 'bold', background: maxBackColor}}}
                                    value={maxValue}
                                    onChange={onMaxValueChange}
                                    type="number"
@@ -114,7 +265,7 @@ function App() {
                         <TextField variant={'outlined'}
                                    sx={{height: '30px', width: '40%'}}
                                    size="small"
-                                   inputProps={{min: 0, style: { textAlign: 'center', color: 'rgba(25,118,210,0.72)', fontWeight: 'bold'}}}
+                                   inputProps={{min: 0, style: { textAlign: 'center', color: minValueColorClass, fontWeight: 'bold', background: minBackColor}}}
                                    value={minValue}
                                    onChange={onMinValueChange}
                                    type="number"
@@ -141,7 +292,7 @@ function App() {
             </div>
             <div className={s.counterContainer}>
                 <div className={counterDisplay}>
-                    {final_display_counter}
+                    {display === 'enter values and press "set"' ? 'enter values and press "set"' : display === 'Incorrect value!' ? 'Incorrect value!' : counter}
                 </div>
                 <div className={s.counterBtns}>
                     <IconButton onClick={onAddCounterClick}
