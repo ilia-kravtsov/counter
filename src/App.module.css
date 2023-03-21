@@ -1,0 +1,109 @@
+.App {
+  display: flex;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+  height: 100vh;
+  width: 100vw;
+  box-sizing: border-box;
+  align-items: center;
+  font-family: 'Lora', serif;
+  color: rgba(25,118,210,0.72);
+}
+
+.counterContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 400px;
+  height: 300px;
+  border-radius: 10px;
+  box-shadow: 2px 2px 10px 0 rgba(0, 0, 0, 0.5);
+  /*border: 3px solid #6ce4f9;*/
+}
+
+.setContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 400px;
+  height: 300px;
+  border-radius: 10px;
+  box-shadow: 2px 2px 10px 0 rgba(0, 0, 0, 0.5);
+}
+
+.counterDisplay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 90%;
+  height: 50%;
+  border-radius: 10px;
+  box-shadow: 2px 2px 10px 0 rgba(0, 0, 0, 0.5);
+  font-size: 70px;
+}
+
+.setDisplay {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-evenly;
+  width: 90%;
+  height: 50%;
+  border-radius: 10px;
+  box-shadow: 2px 2px 10px 0 rgba(0, 0, 0, 0.5);
+  font-size: 20px;
+  padding-left: 10px;
+}
+
+.counterBtns {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 90%;
+  height: 30%;
+  border-radius: 10px;
+  box-shadow: 2px 2px 10px 0 rgba(0, 0, 0, 0.5);
+}
+
+.setBtns {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 90%;
+  height: 30%;
+  border-radius: 10px;
+  box-shadow: 2px 2px 10px 0 rgba(0, 0, 0, 0.5);
+}
+
+.colorRed {
+  color: rgba(210,0,31,0.72);
+}
+
+.maxContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.minContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  margin-left: 3px;
+}
+
+.arrows {
+  display: flex;
+  flex-direction: column;
+  margin-top: 5px;
+}
+
+.error {
+  font-size: 24px;
+}
+
+.changeValueText {
+  font-size: 20px;
+}
