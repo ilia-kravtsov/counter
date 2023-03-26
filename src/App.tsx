@@ -49,7 +49,7 @@ function App() {
     const onResetCounterClick = () => setCounter(minValue)
     const onMaxValueChange = (e: ChangeEvent<HTMLInputElement>) => {
         let event = +e.currentTarget.value
-        if (Number.isInteger(event)) {
+        if (Number.isInteger(event) && event < 1000000) {
             setMaxValue(event)
             localStorage.setItem('maxValue', JSON.stringify(event))
             if (event < 0) setDisplay('Incorrect value!');
@@ -60,7 +60,7 @@ function App() {
     }
     const onMinValueChange = (e: ChangeEvent<HTMLInputElement>) => {
         let event = +e.currentTarget.value
-        if (Number.isInteger(event)) {
+        if (Number.isInteger(event) && event < 999999) {
             setMinValue(event)
             localStorage.setItem('minValue', JSON.stringify(event))
             if (event < 0) setDisplay('Incorrect value!');
@@ -83,17 +83,21 @@ function App() {
         let newMaxValue = localStorage.getItem('maxValue')
         let newMinValue = localStorage.getItem('minValue')
         if (newMaxValue && newMinValue) {
-                let newMxValue = JSON.parse(newMaxValue)
-                let newMnValue = JSON.parse(newMinValue)
-                if (newMxValue >= 0) {
-                    setDisplay('enter values and press "set"')
-                }
-                if (newMxValue <= newMnValue) {
-                    setDisplay('Incorrect value!')
-                }
-                if (newMxValue < 0) {
-                    setDisplay('Incorrect value!')
-                }
+            let newMxValue = JSON.parse(newMaxValue)
+            let newMnValue = JSON.parse(newMinValue)
+            if (newMxValue <= newMnValue) {
+                setDisplay('Incorrect value!')
+            }
+            if (newMxValue < 0) {
+                setDisplay('Incorrect value!')
+            }
+            if (newMxValue >= 0) {
+                setDisplay('enter values and press "set"')
+            }
+            if (newMxValue > 1000000 || newMnValue > 999999 ) {
+                setDisplay('Incorrect value!')
+            }
+
         }
     }
     const onDownArrowMaxClick = () => {
@@ -113,6 +117,9 @@ function App() {
             if (newMxValue < 0) {
                 setDisplay('Incorrect value!')
             }
+            if (newMxValue > 1000000 || newMnValue > 999999 ) {
+                setDisplay('Incorrect value!')
+            }
         }
     }
     const onUpArrowMinClick = () => {
@@ -130,6 +137,9 @@ function App() {
                 setDisplay('Incorrect value!')
             }
             if (newMnValue < 0) {
+                setDisplay('Incorrect value!')
+            }
+            if (newMxValue > 1000000 || newMnValue > 999999 ) {
                 setDisplay('Incorrect value!')
             }
 
@@ -153,6 +163,9 @@ function App() {
                 setDisplay('Incorrect value!')
             }
             if (newMnValue < 0) {
+                setDisplay('Incorrect value!')
+            }
+            if (newMxValue > 1000000 || newMnValue > 999999 ) {
                 setDisplay('Incorrect value!')
             }
 
