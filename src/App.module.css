@@ -18,8 +18,10 @@
   min-width: 400px;
   height: 300px;
   border-radius: 10px;
-  box-shadow: 2px 2px 10px 0 rgba(0, 0, 0, 0.3);
+  box-shadow: 2px 2px 10px 0 rgba(0, 0, 0, 0.2);
   padding: 10px;
+  background-color: whitesmoke;
+  flex-wrap: wrap;
   /*border: 3px solid #6ce4f9;*/
 }
 
@@ -28,10 +30,12 @@
   flex-direction: column;
   justify-content: space-evenly;
   align-items: center;
-  width: 400px;
+  min-width: 400px;
   height: 300px;
   border-radius: 10px;
-  box-shadow: 2px 2px 10px 0 rgba(0, 0, 0, 0.3);
+  box-shadow: 2px 2px 10px 0 rgba(0, 0, 0, 0.2);
+  background-color: whitesmoke;
+  flex-wrap: wrap;
 }
 
 .counterDisplay {
@@ -42,7 +46,7 @@
   min-width: 90%;
   height: 50%;
   border-radius: 10px;
-  box-shadow: 2px 2px 10px 0 rgba(0, 0, 0, 0.3);
+  box-shadow: 2px 2px 10px 0 rgba(0, 0, 0, 0.2);
   font-size: 70px;
 }
 
@@ -54,10 +58,11 @@
   width: 90%;
   height: 50%;
   border-radius: 10px;
-  box-shadow: 2px 2px 10px 0 rgba(0, 0, 0, 0.3);
+  box-shadow: 2px 2px 10px 0 rgba(0, 0, 0, 0.2);
   font-size: 20px;
   padding-left: 10px;
   box-sizing: border-box;
+  flex-wrap: wrap;
 }
 
 .counterBtns {
@@ -67,7 +72,7 @@
   width: 90%;
   height: 30%;
   border-radius: 10px;
-  box-shadow: 2px 2px 10px 0 rgba(0, 0, 0, 0.3);
+  box-shadow: 2px 2px 10px 0 rgba(0, 0, 0, 0.2);
 }
 
 .setBtns {
@@ -77,7 +82,7 @@
   width: 90%;
   height: 30%;
   border-radius: 10px;
-  box-shadow: 2px 2px 10px 0 rgba(0, 0, 0, 0.3);
+  box-shadow: 2px 2px 10px 0 rgba(0, 0, 0, 0.2);
 }
 
 .colorRed {
@@ -88,6 +93,7 @@
   display: flex;
   align-items: center;
   justify-content: space-evenly;
+  box-sizing: border-box;
 }
 
 .minContainer {
@@ -95,6 +101,7 @@
   align-items: center;
   justify-content: space-evenly;
   margin-left: 3px;
+  box-sizing: border-box;
 }
 
 .arrows {
@@ -113,4 +120,21 @@
 
 .colorWhite {
   color: white;
+}
+
+@media screen and (min-width: 2550px) {
+  .counterContainer {
+    min-width: 600px;
+    height: 500px;
+  }
+  .setContainer {
+    min-width: 600px;
+    height: 500px;
+  }
+  .maxContainer {
+    width: 100%;
+  }
+  .minContainer {
+    width: 100%;
+  }
 }
