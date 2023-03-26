@@ -1,11 +1,7 @@
 import React, {ChangeEvent, useEffect, useState} from 'react';
 import s from './App.module.css';
-import {IconButton, TextField} from "@mui/material";
-import AddIcon from '@mui/icons-material/Add';
-import KeyboardDoubleArrowRightRoundedIcon from '@mui/icons-material/KeyboardDoubleArrowRightRounded';
-import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded';
-import RestartAltRoundedIcon from '@mui/icons-material/RestartAltRounded';
-import ExpandLessRoundedIcon from '@mui/icons-material/ExpandLessRounded';
+import {Counter} from "./components/Counter/Counter";
+import {Settings} from "./components/Settings/Settings";
 
 function App() {
 
@@ -23,6 +19,9 @@ function App() {
             setMaxValue(newMxValue)
             setMinValue(newMnValue)
             setCounter(newMnValue)
+        } else {
+            localStorage.setItem('minValue', JSON.stringify(0))
+            localStorage.setItem('maxValue', JSON.stringify(5))
         }
     }, [])
     useEffect(() => {
@@ -45,22 +44,30 @@ function App() {
     }, [minValue])
 
     const onAddCounterClick = () => {
-        setCounter(counter+1)
+        setCounter(counter + 1)
     }
     const onResetCounterClick = () => setCounter(minValue)
     const onMaxValueChange = (e: ChangeEvent<HTMLInputElement>) => {
         let event = +e.currentTarget.value
-        setMaxValue(event)
-        localStorage.setItem('maxValue', JSON.stringify(event))
-        if (event < 0) setDisplay('Incorrect value!');
-        if (event >= 0) setDisplay('enter values and press "set"');
+        if (Number.isInteger(event)) {
+            setMaxValue(event)
+            localStorage.setItem('maxValue', JSON.stringify(event))
+            if (event < 0) setDisplay('Incorrect value!');
+            if (event >= 0) setDisplay('enter values and press "set"');
+        } else {
+            setDisplay('Incorrect value!')
+        }
     }
     const onMinValueChange = (e: ChangeEvent<HTMLInputElement>) => {
         let event = +e.currentTarget.value
-        setMinValue(event)
-        localStorage.setItem('minValue', JSON.stringify(event))
-        if (event < 0) setDisplay('Incorrect value!');
-        if (event >= 0) setDisplay('enter values and press "set"');
+        if (Number.isInteger(event)) {
+            setMinValue(event)
+            localStorage.setItem('minValue', JSON.stringify(event))
+            if (event < 0) setDisplay('Incorrect value!');
+            if (event >= 0) setDisplay('enter values and press "set"');
+        } else {
+            setDisplay('Incorrect value!')
+        }
     }
     const onSetClick = () => {
         let newMinValue = localStorage.getItem('minValue')
@@ -71,27 +78,27 @@ function App() {
         }
     }
     const onUpArrowMaxClick = () => {
-        setMaxValue(maxValue+1)
-        localStorage.setItem('maxValue', JSON.stringify(maxValue+1))
+        setMaxValue(maxValue + 1)
+        localStorage.setItem('maxValue', JSON.stringify(maxValue + 1))
         let newMaxValue = localStorage.getItem('maxValue')
         let newMinValue = localStorage.getItem('minValue')
         if (newMaxValue && newMinValue) {
-            let newMxValue = JSON.parse(newMaxValue)
-            let newMnValue = JSON.parse(newMinValue)
-            if (newMxValue >= 0) {
-                setDisplay('enter values and press "set"')
-            }
-            if (newMxValue <= newMnValue) {
-                setDisplay('Incorrect value!')
-            }
-            if (newMxValue < 0) {
-                setDisplay('Incorrect value!')
-            }
+                let newMxValue = JSON.parse(newMaxValue)
+                let newMnValue = JSON.parse(newMinValue)
+                if (newMxValue >= 0) {
+                    setDisplay('enter values and press "set"')
+                }
+                if (newMxValue <= newMnValue) {
+                    setDisplay('Incorrect value!')
+                }
+                if (newMxValue < 0) {
+                    setDisplay('Incorrect value!')
+                }
         }
     }
     const onDownArrowMaxClick = () => {
-        setMaxValue(maxValue-1)
-        localStorage.setItem('maxValue', JSON.stringify(maxValue-1))
+        setMaxValue(maxValue - 1)
+        localStorage.setItem('maxValue', JSON.stringify(maxValue - 1))
         let newMinValue = localStorage.getItem('minValue')
         let newMaxValue = localStorage.getItem('maxValue')
         if (newMaxValue && newMinValue) {
@@ -109,8 +116,8 @@ function App() {
         }
     }
     const onUpArrowMinClick = () => {
-        setMinValue(minValue+1)
-        localStorage.setItem('minValue', JSON.stringify(minValue+1))
+        setMinValue(minValue + 1)
+        localStorage.setItem('minValue', JSON.stringify(minValue + 1))
         let newMinValue = localStorage.getItem('minValue')
         let newMaxValue = localStorage.getItem('maxValue')
         if (newMinValue && newMaxValue) {
@@ -129,8 +136,8 @@ function App() {
         }
     }
     const onDownArrowMinClick = () => {
-        setMinValue(minValue-1)
-        localStorage.setItem('minValue', JSON.stringify(minValue-1))
+        setMinValue(minValue - 1)
+        localStorage.setItem('minValue', JSON.stringify(minValue - 1))
         let newMinValue = localStorage.getItem('minValue')
         let newMaxValue = localStorage.getItem('maxValue')
         if (newMinValue && newMaxValue) {
@@ -182,6 +189,7 @@ function App() {
         minValueColorClass = 'white'
         maxValueColorClass = 'white'
         minBackColor = 'rgba(210,0,31,0.72)'
+        maxBackColor = 'rgba(210,0,31,0.72)'
     }
     if (display === '') {
         disabledSet = true
@@ -216,6 +224,7 @@ function App() {
         display = 'Incorrect value!'
         counterDisplay = `${s.counterDisplay} ${s.error} ${s.colorRed}`
         minValueColorClass = 'white'
+        maxValueColorClass = 'white'
     }
     if (minValue < 0 && maxValue < 0) {
         disabledReset = true
@@ -231,76 +240,29 @@ function App() {
 
     return (
         <div className={s.App}>
-            <div className={s.setContainer}>
-                <div className={s.setDisplay}>
-                    <div className={s.maxContainer}>
-                        <span>max value:</span>
-                        <TextField variant={'outlined'}
-                                   sx={{height: '30px', width: '40%'}}
-                                   size="small"
-                                   inputProps={{min: 0, style: { textAlign: 'center', color: maxValueColorClass, fontWeight: 'bold', background: maxBackColor}}}
-                                   value={maxValue}
-                                   onChange={onMaxValueChange}
-                                   type="number"
-                        ></TextField>
-                        <div className={s.arrows}>
-                            <IconButton color={'primary'}
-                                        sx={{height: '30px', width: '30px'}}
-                                        onClick={onUpArrowMaxClick}
-                            ><ExpandLessRoundedIcon/></IconButton>
-                            <IconButton color={'primary'}
-                                        sx={{height: '30px', width: '30px'}}
-                                        onClick={onDownArrowMaxClick}
-                            ><KeyboardArrowDownRoundedIcon/></IconButton>
-                        </div>
-                    </div>
-                    <div className={s.minContainer}>
-                        <span>min value:</span>
-                        <TextField variant={'outlined'}
-                                   sx={{height: '30px', width: '40%'}}
-                                   size="small"
-                                   inputProps={{min: 0, style: { textAlign: 'center', color: minValueColorClass, fontWeight: 'bold', background: minBackColor}}}
-                                   value={minValue}
-                                   onChange={onMinValueChange}
-                                   type="number"
-                        ></TextField>
-                        <div className={s.arrows}>
-                            <IconButton color={'primary'}
-                                        sx={{height: '30px', width: '30px'}}
-                                        onClick={onUpArrowMinClick}
-                            ><ExpandLessRoundedIcon/></IconButton>
-                            <IconButton color={'primary'}
-                                        onClick={onDownArrowMinClick}
-                                        sx={{height: '30px', width: '30px'}}
-                            ><KeyboardArrowDownRoundedIcon/></IconButton>
-                        </div>
-                    </div>
-                </div>
-                <div className={s.setBtns}>
-                    <IconButton onClick={onSetClick}
-                                color={'primary'}
-                                sx={{width: '60px', height: '60px', boxShadow: '2px 2px 10px 0 rgba(0, 0, 0, 0.5)'}}
-                                disabled={disabledSet}
-                    ><KeyboardDoubleArrowRightRoundedIcon/></IconButton>
-                </div>
-            </div>
-            <div className={s.counterContainer}>
-                <div className={counterDisplay}>
-                    {display === 'enter values and press "set"' ? 'enter values and press "set"' : display === 'Incorrect value!' ? 'Incorrect value!' : counter}
-                </div>
-                <div className={s.counterBtns}>
-                    <IconButton onClick={onAddCounterClick}
-                                color={'primary'}
-                                sx={{width: '60px', height: '60px', boxShadow: '2px 2px 10px 0 rgba(0, 0, 0, 0.5)'}}
-                                disabled={disabledAdd}
-                    ><AddIcon/></IconButton>
-                    <IconButton onClick={onResetCounterClick}
-                                disabled={disabledReset}
-                                color={'primary'}
-                                sx={{width: '60px', height: '60px', boxShadow: '2px 2px 10px 0 rgba(0, 0, 0, 0.5)'}}
-                    ><RestartAltRoundedIcon/></IconButton>
-                </div>
-            </div>
+            <Settings onDownArrowMaxClick={onDownArrowMaxClick}
+                      onDownArrowMinClick={onDownArrowMinClick}
+                      maxValueColorClass={maxValueColorClass}
+                      minValueColorClass={minValueColorClass}
+                      onUpArrowMaxClick={onUpArrowMaxClick}
+                      onUpArrowMinClick={onUpArrowMinClick}
+                      onMaxValueChange={onMaxValueChange}
+                      onMinValueChange={onMinValueChange}
+                      minBackColor={minBackColor}
+                      maxBackColor={maxBackColor}
+                      disabledSet={disabledSet}
+                      onSetClick={onSetClick}
+                      maxValue={maxValue}
+                      minValue={minValue}
+            />
+            <Counter onResetCounterClick={onResetCounterClick}
+                     onAddCounterClick={onAddCounterClick}
+                     counterDisplay={counterDisplay}
+                     disabledReset={disabledReset}
+                     disabledAdd={disabledAdd}
+                     counter={counter}
+                     display={display}
+            />
         </div>
     );
 }
