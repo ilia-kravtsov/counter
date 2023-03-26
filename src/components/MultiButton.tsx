@@ -13,7 +13,6 @@ export const MultiButton: FC<ButtonType> = ({
                                            disabled,
                                            buttonIcon,
                                            ...props}) => {
-    console.log(typeof buttonIcon)
     return (
         <IconButton onClick={callback}
                     color={'primary'}
