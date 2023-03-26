@@ -17,7 +17,7 @@ export const MultiButton: FC<ButtonType> = ({
     return (
         <IconButton onClick={callback}
                     color={'primary'}
-                    sx={{width: '60px', height: '60px', boxShadow: '2px 2px 10px 0 rgba(0, 0, 0, 0.5)'}}
+                    sx={{width: '60px', height: '60px', boxShadow: '2px 2px 10px 0 rgba(0, 0, 0, 0.3)'}}
                     disabled={disabled}
         >
             {buttonIcon}
