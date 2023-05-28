@@ -1,14 +1,36 @@
-import React, {ChangeEvent, useEffect, useState} from 'react';
+import React, {ChangeEvent, useEffect, useReducer} from 'react';
 import s from './App.module.css';
 import {Counter} from "./components/Counter/Counter";
 import {Settings} from "./components/Settings/Settings";
+import {
+    addCounterAC,
+    counterReducer,
+    firstLoadCounterAC,
+    resetCounterAC,
+    setNewValueCounterAC
+} from "./components/Reducers/counter_reducer";
+import {
+    downArrowMinClickAC,
+    firstLoadMinAC,
+    minReducer,
+    minValueChangeAC,
+    upArrowMinClickAC
+} from "./components/Reducers/min_reducer";
+import {
+    downArrowMaxClickAC,
+    firstLoadMaxAC,
+    maxReducer,
+    maxValueChangeAC,
+    upArrowMaxClickAC
+} from "./components/Reducers/max_reducer";
+import {displayReducer, newDisplayValueAC} from "./components/Reducers/display_reducer";
 
-function App() {
+function AppWithReducers() {
 
-    let [minValue, setMinValue] = useState<number>(0)
-    let [maxValue, setMaxValue] = useState<number>(5)
-    let [counter, setCounter] = useState<number>(0)
-    let [display, setDisplay] = useState<number | string>('')
+    let [minValue, dispatchMinValue] = useReducer(minReducer, 0)
+    let [maxValue, dispatchMaxValue] = useReducer(maxReducer, 5)
+    let [counter, dispatchCounter] = useReducer(counterReducer, 0)
+    let [display, dispatchDisplay] = useReducer(displayReducer,'')
 
     useEffect(() => {
         let newMinValue = localStorage.getItem('minValue')
@@ -16,9 +38,9 @@ function App() {
         if (newMinValue && newMaxValue) {
             let newMnValue = JSON.parse(newMinValue)
             let newMxValue = JSON.parse(newMaxValue)
-            setMaxValue(newMxValue)
-            setMinValue(newMnValue)
-            setCounter(newMnValue)
+            dispatchMaxValue(firstLoadMaxAC(newMxValue))
+            dispatchMinValue(firstLoadMinAC(newMnValue))
+            dispatchCounter(firstLoadCounterAC(newMnValue))
         } else {
             localStorage.setItem('minValue', JSON.stringify(0))
             localStorage.setItem('maxValue', JSON.stringify(5))
@@ -29,47 +51,45 @@ function App() {
         if (newMinValue) {
             let newMnValue = JSON.parse(newMinValue)
             if (newMnValue < 0) {
-                setDisplay('Incorrect value!')
+                dispatchDisplay(newDisplayValueAC('Incorrect value!'))
             }
         }
     }, [maxValue])
 
-    const onAddCounterClick = () => {
-        setCounter(counter + 1)
-    }
-    const onResetCounterClick = () => setCounter(minValue)
+    const onAddCounterClick = () => dispatchCounter(addCounterAC())
+    const onResetCounterClick = () => dispatchCounter(resetCounterAC(minValue))
     const onMaxValueChange = (e: ChangeEvent<HTMLInputElement>) => {
         let event = +e.currentTarget.value
         if (Number.isInteger(event) && event < 1000000) {
-            setMaxValue(event)
+            dispatchMaxValue(maxValueChangeAC(event))
             localStorage.setItem('maxValue', JSON.stringify(event))
-            if (event < 0) setDisplay('Incorrect value!');
-            if (event >= 0) setDisplay('enter values and press "set"');
+            if (event < 0) dispatchDisplay(newDisplayValueAC('Incorrect value!'))
+            if (event >= 0) dispatchDisplay(newDisplayValueAC('enter values and press "set"'))
         } else {
-            setDisplay('Incorrect value!')
+            dispatchDisplay(newDisplayValueAC('Incorrect value!'))
         }
     }
     const onMinValueChange = (e: ChangeEvent<HTMLInputElement>) => {
         let event = +e.currentTarget.value
         if (Number.isInteger(event) && event < 999999) {
-            setMinValue(event)
+            dispatchMinValue(minValueChangeAC(event))
             localStorage.setItem('minValue', JSON.stringify(event))
-            if (event < 0) setDisplay('Incorrect value!');
-            if (event >= 0) setDisplay('enter values and press "set"');
+            if (event < 0)  dispatchDisplay(newDisplayValueAC('Incorrect value!'))
+            if (event >= 0) dispatchDisplay(newDisplayValueAC('enter values and press "set"'))
         } else {
-            setDisplay('Incorrect value!')
+            dispatchDisplay(newDisplayValueAC('Incorrect value!'))
         }
     }
     const onSetClick = () => {
         let newMinValue = localStorage.getItem('minValue')
         if (newMinValue) {
             let newValue = JSON.parse(newMinValue)
-            setCounter(newValue)
-            setDisplay('')
+            dispatchCounter(setNewValueCounterAC(newValue))
+            dispatchDisplay(newDisplayValueAC(''))
         }
     }
     const onUpArrowMaxClick = () => {
-        setMaxValue(maxValue + 1)
+        dispatchMaxValue(upArrowMaxClickAC(maxValue + 1))
         localStorage.setItem('maxValue', JSON.stringify(maxValue + 1))
         let newMaxValue = localStorage.getItem('maxValue')
         let newMinValue = localStorage.getItem('minValue')
@@ -77,22 +97,22 @@ function App() {
             let newMxValue = JSON.parse(newMaxValue)
             let newMnValue = JSON.parse(newMinValue)
             if (newMxValue <= newMnValue) {
-                setDisplay('Incorrect value!')
+                dispatchDisplay(newDisplayValueAC('Incorrect value!'))
             }
             if (newMxValue < 0) {
-                setDisplay('Incorrect value!')
+                dispatchDisplay(newDisplayValueAC('Incorrect value!'))
             }
             if (newMxValue >= 0) {
-                setDisplay('enter values and press "set"')
+                dispatchDisplay(newDisplayValueAC('enter values and press "set"'))
             }
             if (newMxValue > 1000000 || newMnValue > 999999 ) {
-                setDisplay('Incorrect value!')
+                dispatchDisplay(newDisplayValueAC('Incorrect value!'))
             }
 
         }
     }
     const onDownArrowMaxClick = () => {
-        setMaxValue(maxValue - 1)
+        dispatchMaxValue(downArrowMaxClickAC(maxValue - 1))
         localStorage.setItem('maxValue', JSON.stringify(maxValue - 1))
         let newMinValue = localStorage.getItem('minValue')
         let newMaxValue = localStorage.getItem('maxValue')
@@ -100,21 +120,21 @@ function App() {
             let newMxValue = JSON.parse(newMaxValue)
             let newMnValue = JSON.parse(newMinValue)
             if (newMxValue >= 0 && newMnValue >= 0) {
-                setDisplay('enter values and press "set"')
+                dispatchDisplay(newDisplayValueAC('enter values and press "set"'))
             }
             if (newMxValue <= newMnValue) {
-                setDisplay('Incorrect value!')
+                dispatchDisplay(newDisplayValueAC('Incorrect value!'))
             }
             if (newMxValue < 0) {
-                setDisplay('Incorrect value!')
+                dispatchDisplay(newDisplayValueAC('Incorrect value!'))
             }
             if (newMxValue > 1000000 || newMnValue > 999999 ) {
-                setDisplay('Incorrect value!')
+                dispatchDisplay(newDisplayValueAC('Incorrect value!'))
             }
         }
     }
     const onUpArrowMinClick = () => {
-        setMinValue(minValue + 1)
+        dispatchMinValue(upArrowMinClickAC(minValue + 1))
         localStorage.setItem('minValue', JSON.stringify(minValue + 1))
         let newMinValue = localStorage.getItem('minValue')
         let newMaxValue = localStorage.getItem('maxValue')
@@ -122,22 +142,22 @@ function App() {
             let newMnValue = JSON.parse(newMinValue)
             let newMxValue = JSON.parse(newMaxValue)
             if (newMnValue >= 0) {
-                setDisplay('enter values and press "set"')
+                dispatchDisplay(newDisplayValueAC('enter values and press "set"'))
             }
             if (newMxValue <= newMnValue) {
-                setDisplay('Incorrect value!')
+                dispatchDisplay(newDisplayValueAC('Incorrect value!'))
             }
             if (newMnValue < 0) {
-                setDisplay('Incorrect value!')
+                dispatchDisplay(newDisplayValueAC('Incorrect value!'))
             }
             if (newMxValue > 1000000 || newMnValue > 999999 ) {
-                setDisplay('Incorrect value!')
+                dispatchDisplay(newDisplayValueAC('Incorrect value!'))
             }
 
         }
     }
     const onDownArrowMinClick = () => {
-        setMinValue(minValue - 1)
+        dispatchMinValue(downArrowMinClickAC(minValue - 1))
         localStorage.setItem('minValue', JSON.stringify(minValue - 1))
         let newMinValue = localStorage.getItem('minValue')
         let newMaxValue = localStorage.getItem('maxValue')
@@ -145,19 +165,19 @@ function App() {
             let newMnValue = JSON.parse(newMinValue)
             let newMxValue = JSON.parse(newMaxValue)
             if (newMnValue >= 0) {
-                setDisplay('enter values and press "set"')
+                dispatchDisplay(newDisplayValueAC('enter values and press "set"'))
             }
             if (newMnValue === 0) {
-                setDisplay('enter values and press "set"')
+                dispatchDisplay(newDisplayValueAC('enter values and press "set"'))
             }
             if (newMxValue <= newMnValue) {
-                setDisplay('Incorrect value!')
+                dispatchDisplay(newDisplayValueAC('Incorrect value!'))
             }
             if (newMnValue < 0) {
-                setDisplay('Incorrect value!')
+                dispatchDisplay(newDisplayValueAC('Incorrect value!'))
             }
             if (newMxValue > 1000000 || newMnValue > 999999 ) {
-                setDisplay('Incorrect value!')
+                dispatchDisplay(newDisplayValueAC('Incorrect value!'))
             }
 
         }
@@ -168,8 +188,10 @@ function App() {
     let disabledAdd: boolean = false
     let disabledSet: boolean = false
     let counterDisplay: string = s.counterDisplay
-    let backMinMaxColor = ''
-    let valueColorClass = 'rgba(25,118,210,0.72)'
+    let minValueColorClass = 'rgba(25,118,210,0.72)'
+    let maxValueColorClass = 'rgba(25,118,210,0.72)'
+    let minBackColor = ''
+    let maxBackColor = ''
 
     if (counter <= minValue) {
         disabledReset = true
@@ -188,61 +210,69 @@ function App() {
         disabledAdd = true
         disabledSet = true
         counterDisplay = `${s.counterDisplay} ${s.error} ${s.colorRed}`
-        valueColorClass = 'white'
-        backMinMaxColor = 'rgba(210,0,31,0.72)'
+        minValueColorClass = 'white'
+        maxValueColorClass = 'white'
+        minBackColor = 'rgba(210,0,31,0.72)'
+        maxBackColor = 'rgba(210,0,31,0.72)'
     }
     if (display === '') {
         disabledSet = true
     }
     if (minValue >= maxValue) {
+        minValueColorClass = 'white'
+        maxValueColorClass = 'white'
+        minBackColor = 'rgba(210,0,31,0.72)'
+        maxBackColor = 'rgba(210,0,31,0.72)'
         display = 'Incorrect value!'
         counterDisplay = `${s.counterDisplay} ${s.error} ${s.colorRed}`
         disabledReset = true
         disabledAdd = true
         disabledSet = true
-        valueColorClass = 'white'
-        backMinMaxColor = 'rgba(210,0,31,0.72)'
     }
     if (maxValue < 0) {
         disabledReset = true
         disabledAdd = true
         disabledSet = true
-        backMinMaxColor = 'rgba(210,0,31,0.72)'
+        maxBackColor = 'rgba(210,0,31,0.72)'
+        minBackColor = 'rgba(210,0,31,0.72)'
         display = 'Incorrect value!'
         counterDisplay = `${s.counterDisplay} ${s.error} ${s.colorRed}`
-        valueColorClass = 'white'
+        maxValueColorClass = 'white'
     }
     if (minValue < 0) {
         disabledReset = true
         disabledAdd = true
         disabledSet = true
+        minBackColor = 'rgba(210,0,31,0.72)'
         display = 'Incorrect value!'
         counterDisplay = `${s.counterDisplay} ${s.error} ${s.colorRed}`
-        valueColorClass = 'white'
-        backMinMaxColor = 'rgba(210,0,31,0.72)'
+        minValueColorClass = 'white'
+        maxValueColorClass = 'white'
     }
     if (minValue < 0 && maxValue < 0) {
         disabledReset = true
         disabledAdd = true
         disabledSet = true
-        backMinMaxColor = 'rgba(210,0,31,0.72)'
+        minBackColor = 'rgba(210,0,31,0.72)'
+        maxBackColor = 'rgba(210,0,31,0.72)'
         display = 'Incorrect value!'
         counterDisplay = `${s.counterDisplay} ${s.error} ${s.colorRed}`
-        valueColorClass = 'white'
+        minValueColorClass = 'white'
+        maxValueColorClass = 'white'
     }
 
     return (
         <div className={s.App}>
             <Settings onDownArrowMaxClick={onDownArrowMaxClick}
                       onDownArrowMinClick={onDownArrowMinClick}
-                      maxValueColorClass={valueColorClass}
-                      minValueColorClass={valueColorClass}
+                      maxValueColorClass={maxValueColorClass}
+                      minValueColorClass={minValueColorClass}
                       onUpArrowMaxClick={onUpArrowMaxClick}
                       onUpArrowMinClick={onUpArrowMinClick}
                       onMaxValueChange={onMaxValueChange}
                       onMinValueChange={onMinValueChange}
-                      minBackColor={backMinMaxColor}
-                      maxBackColor={backMinMaxColor}
+                      minBackColor={minBackColor}
+                      maxBackColor={maxBackColor}
                       disabledSet={disabledSet}
                       onSetClick={onSetClick}
                       maxValue={maxValue}
@@ -260,4 +290,4 @@ function App() {
     );
 }
 
-export default App;
+export default AppWithReducers;
